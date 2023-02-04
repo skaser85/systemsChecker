@@ -27,14 +27,11 @@ class WinService:
         self.state = self.get_state()
 
     def sc(self, sc_cmd: str) -> str:
-        if len(self.server_name) == 0:
-            check = subprocess.run(['sc', sc_cmd, self.name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output = subprocess.run(['sc', rf'\\{self.server_name}', sc_cmd, self.name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if output.returncode == 0:
+            return output.stdout.decode()
         else:
-            check = subprocess.run(['sc', rf'\\{self.server_name}', sc_cmd, self.name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if check.returncode == 0:
-            return check.stdout.decode()
-        else:
-            raise SystemError(check.stdout.decode())
+            raise SystemError(output.stdout.decode())
 
     def get_display_name(self) -> str:
         svc_details = self.sc('getdisplayname')
@@ -43,7 +40,11 @@ class WinService:
     def get_state(self) -> str:
         svc_details = self.sc('query')
         data = [l.strip() for l in svc_details.split('\n') if len(l.strip()) > 0]
-        return data[2].split(':')[-1].strip().split(' ')[0].strip()
+        return list(WinServiceState)[int(data[2].split(':')[-1].strip().split(' ')[0].strip())]
+
+    def update(self):
+        self.state = self.get_state()
 
 if __name__ == '__main__':
-    print(WinService('Razer Synapse Service'))
+    rss = WinService('Razer Synapse Service')
+    print(rss.get_state())
