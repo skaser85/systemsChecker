@@ -26,7 +26,7 @@ class WinProc:
     def update(self):
         tl = [l.strip() for l in get_tasklist(self.server_name).split('\n') if len(l.strip()) > 0]
         tl = [[i.strip('\"') for i in l.split(',"')] for l in tl]
-        tasks = [t for t in tl if t[0] == self.name]
+        tasks = [t for t in tl if t[0].lower() == self.name.lower()]
         
         self.is_running = False;
         self.instances = [];
