@@ -73,10 +73,13 @@ if __name__ == '__main__':
             program = item['program']
         if 'instanceCount' in item:
             instance_count = item['instanceCount']
-        check = Check(item['name'], item['server'], ct, st, item['service'], item['url'], program, instance_count, item['db'], item['company'], item['bu'], item['system'])
+        check = Check(item['name'], item['server'], ct, st, item['service'], item['url'], \
+                      program, instance_count, item['db'], item['company'], item['bu'], item['system'])
         checks.append(check)
 
-    for check in checks:
+    total = len(checks)
+    for i, check in enumerate(checks):
+        print(f'{i + 1} of {total}: Checking {check.name}...')
         if check.check_type == CheckType.JOB:
             ...
         elif check.check_type == CheckType.PROGRAM:
