@@ -1,28 +1,36 @@
 import requests
 from urllib.parse import urlparse
+from dataclasses import dataclass
 
-min_attributes = ('scheme', 'netloc')
+@dataclass
+class Url:
+    url: str
+    is_running: bool = False
 
-def is_valid(url, qualifying=min_attributes):
-    tokens = urlparse(url)
-    return all([getattr(tokens, qualifying_attr)
-                for qualifying_attr in qualifying])
+    def __post_init__(self):
+        if not self.is_valid():
+            raise TypeError(f'Invalid URL: {self.url}')
+        self.update()
 
-def check_url(url: str) -> str:
-    if not is_valid(url):
-        raise ValueError(f'Invalid URL: {url}')
-    try:
-        #Get Url
-        get = requests.get(url)
-        # if the request succeeds 
-        if get.status_code in [200]:
-            return(f"{url}: is reachable")
-        else:
-            return(f"{url}: is Not reachable, status_code: {get.status_code}")
-    #Exception
-    except requests.exceptions.RequestException as e:
-        # print URL with Errs
-        raise SystemExit(f"{url}: is Not reachable \nErr: {e}")
+    def is_valid(self):
+        min_attributes = ('scheme', 'netloc')
+        tokens = urlparse(self.url)
+        return all([getattr(tokens, qualifying_attr)
+                    for qualifying_attr in min_attributes])
+
+    def check_url(self) -> bool:
+        try:
+            #Get Url
+            get = requests.get(self.url)
+            # if the request succeeds 
+            return get.status_code in [200]
+        #Exception
+        except requests.exceptions.RequestException as e:
+            # print URL with Errs
+            raise SystemExit(f"{self.url}: is Not reachable \nErr: {e}")
+
+    def update(self):
+        self.is_running = self.check_url()
 
 if __name__ == '__main__':
-    print(check_url('http://www.google.com'))
+    print(Url('http://www.google.com'))

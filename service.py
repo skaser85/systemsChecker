@@ -19,12 +19,13 @@ class WinService:
     server_name: str = ''
     display_name: str = ''
     state: WinServiceState = WinServiceState.Uninitialized
+    is_running: bool = False
 
     def __post_init__(self):
         if len(self.server_name) == 0:
             self.server_name = os.environ['COMPUTERNAME']
         self.display_name = self.get_display_name()
-        self.state = self.get_state()
+        self.update()
 
     def sc(self, sc_cmd: str) -> str:
         output = subprocess.run(['sc', rf'\\{self.server_name}', sc_cmd, self.name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -44,6 +45,7 @@ class WinService:
 
     def update(self):
         self.state = self.get_state()
+        self.is_running = self.state == WinServiceState.Running
 
 if __name__ == '__main__':
     rss = WinService('Razer Synapse Service')
