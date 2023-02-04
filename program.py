@@ -3,7 +3,6 @@ from typing import List
 import os
 import subprocess
 from dataclasses import dataclass, field
-import csv
 
 def get_tasklist(server_name: str):
     output = subprocess.run(['tasklist', '/s', rf'\\{server_name}', '/fo', 'csv', '/nh'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -22,9 +21,9 @@ class WinProc:
     def __post_init__(self):
         if (len(self.server_name) == 0):
             self.server_name = os.environ['COMPUTERNAME']
-        self.running()
+        self.update()
 
-    def running(self):
+    def update(self):
         tl = [l.strip() for l in get_tasklist(self.server_name).split('\n') if len(l.strip()) > 0]
         tl = [[i.strip('\"') for i in l.split(',"')] for l in tl]
         tasks = [t for t in tl if t[0] == self.name]
