@@ -1,7 +1,7 @@
 from typing import List
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from enum import Enum, auto
-from json import loads
+from json import loads, dumps
 from service import WinService
 from url import Url
 from program import WinProc
@@ -40,8 +40,14 @@ class Check:
     instance_count: int = 0
     database: str = ''
     company: str = ''
-    business_unit: str = 'all'
-    system: str = 'all'
+    business_unit: str = ''
+    system: str = ''
+
+    def to_json(self):
+        d = asdict(self)
+        d['check_type'] = self.check_type.name.lower()
+        d['service_type'] = self.service_type.name.lower()
+        return d
 
 def get_check_type(t: str) -> CheckType:
     t = t.lower()
@@ -59,40 +65,42 @@ def get_service_type(t: str) -> ServiceType:
             return tp
     return ServiceType.NONE
 
+def write_checklist(checks: List[Check], checklist_filepath: str) -> None:
+    data = []
+    for check in checks:
+        data.append(check.to_json())
+    with open(checklist_filepath, 'w') as f:
+        f.write(dumps(data, ensure_ascii=True, indent=4))
+
 if __name__ == '__main__':
-    with open('checklist.json', 'r') as f:
+    checklist_filepath = 'checklist.json'
+    with open(checklist_filepath, 'r') as f:
         data = loads(f.read())
     
     checks: List[Check] = []
     for item in data:
-        ct = get_check_type(item['type'])
+        ct = get_check_type(item['check_type'])
         st = get_service_type(item['service_type'])
-        program = ''
-        instance_count = 0
-        if 'program' in item:
-            program = item['program']
-        if 'instanceCount' in item:
-            instance_count = item['instanceCount']
         check = Check(item['name'], item['server'], ct, st, item['service'], item['url'], \
-                      program, instance_count, item['db'], item['company'], item['bu'], item['system'])
+                      item['program'], item['instanceCount'], item['database'], \
+                      item['company'], item['business_unit'], item['system'])
         checks.append(check)
 
-    total = len(checks)
-    for i, check in enumerate(checks):
-        print(f'{i + 1} of {total}: Checking {check.name}...')
-        if check.check_type == CheckType.JOB:
-            ...
-        elif check.check_type == CheckType.PROGRAM:
-            proc = WinProc(check.program, check.server)
-            if not proc.is_running:
-                print(f'NOT RUNNING:\n{proc}')
-        elif check.check_type == CheckType.SERVICE:
-            svc = WinService(check.service, check.server)
-            if not svc.is_running:
-                print(f'NOT RUNNING:\n{svc}')
-        elif check.check_type == CheckType.URL:
-            url = Url(check.url)
-            if not url.is_running:
-                print(f'NOT RUNNING:\n{url}')
-        else:
-            raise KeyError(f'Unknown check type: {check.check_type}\n{check}')
+    write_checklist(checks, checklist_filepath)
+
+    # total = len(checks)
+    # for i, check in enumerate(checks):
+    #     print(f'{i + 1} of {total}: Checking {check.name}...')
+    #     if check.check_type == CheckType.JOB:
+    #         ...
+    #     elif check.check_type == CheckType.PROGRAM:
+    #         proc = WinProc(check.program, check.server)
+    #     elif check.check_type == CheckType.SERVICE:
+    #         proc = WinService(check.service, check.server)
+    #     elif check.check_type == CheckType.URL:
+    #         proc = Url(check.url)
+    #     else:
+    #         raise KeyError(f'Unknown check type: {check.check_type}\n{check}')
+        
+    #     if not proc.is_running:
+    #         print(f'NOT RUNNING:\n{proc}')
