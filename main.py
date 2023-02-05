@@ -96,7 +96,7 @@ if __name__ == '__main__':
     #     elif check.check_type == CheckType.PROGRAM:
     #         proc = WinProc(check.program, check.server)
     #     elif check.check_type == CheckType.SERVICE:
-    #         proc = WinService(check.service, check.server)
+    #         proc = WinService(check.service, check.server, check.instance_count)
     #     elif check.check_type == CheckType.URL:
     #         proc = Url(check.url)
     #     else:
