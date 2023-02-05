@@ -82,7 +82,7 @@ if __name__ == '__main__':
         ct = get_check_type(item['check_type'])
         st = get_service_type(item['service_type'])
         check = Check(item['name'], item['server'], ct, st, item['service'], item['url'], \
-                      item['program'], item['instanceCount'], item['database'], \
+                      item['program'], item['instance_count'], item['database'], \
                       item['company'], item['business_unit'], item['system'])
         checks.append(check)
 
