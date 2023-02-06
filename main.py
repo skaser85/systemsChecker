@@ -82,7 +82,7 @@ if __name__ == '__main__':
         ct = get_check_type(item['check_type'])
         st = get_service_type(item['service_type'])
         check = Check(item['name'], item['server'], ct, st, item['service'], item['url'], \
-                      item['program'], item['instanceCount'], item['database'], \
+                      item['program'], item['instance_count'], item['database'], \
                       item['company'], item['business_unit'], item['system'])
         checks.append(check)
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     #     elif check.check_type == CheckType.PROGRAM:
     #         proc = WinProc(check.program, check.server)
     #     elif check.check_type == CheckType.SERVICE:
-    #         proc = WinService(check.service, check.server)
+    #         proc = WinService(check.service, check.server, check.instance_count)
     #     elif check.check_type == CheckType.URL:
     #         proc = Url(check.url)
     #     else:

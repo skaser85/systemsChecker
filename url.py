@@ -6,6 +6,7 @@ from dataclasses import dataclass
 class Url:
     url: str
     is_running: bool = False
+    status_code: int = 0
 
     def __post_init__(self):
         if not self.is_valid():
@@ -19,15 +20,9 @@ class Url:
                     for qualifying_attr in min_attributes])
 
     def check_url(self) -> bool:
-        try:
-            #Get Url
-            get = requests.get(self.url)
-            # if the request succeeds 
-            return get.status_code in [200]
-        #Exception
-        except requests.exceptions.RequestException as e:
-            # print URL with Errs
-            raise SystemExit(f"{self.url}: is Not reachable \nErr: {e}")
+        req = requests.get(self.url)
+        self.status_code = req.status_code
+        return req.status_code in [200]
 
     def update(self):
         self.is_running = self.check_url()

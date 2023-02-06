@@ -15,6 +15,7 @@ def get_tasklist(server_name: str):
 class WinProc:
     name: str
     server_name: str = ''
+    should_be_running_count: int = 1
     is_running: bool = False
     instances: List[int] = field(default_factory=list)
 
@@ -32,7 +33,7 @@ class WinProc:
         self.instances = [];
         
         if len(tasks) > 0:
-            self.is_running = True
+            self.is_running = len(tasks) >= self.should_be_running_count
             for task in tasks:
                 self.instances.append(int(task[1]))
 
