@@ -20,12 +20,20 @@ class Url:
                     for qualifying_attr in min_attributes])
 
     def check_url(self) -> bool:
-        req = requests.get(self.url)
-        self.status_code = req.status_code
-        return req.status_code in [200]
+        try:
+            #Get Url
+            get = requests.get(self.url)
+            # if the request succeeds 
+            self.status_code = get.status_code
+            return get.status_code in [200]
+        #Exception
+        except requests.exceptions.RequestException as e:
+            # print URL with Errs
+            # raise SystemExit(f"{self.url}: is Not reachable \nErr: {e}")
+            return False
 
     def update(self):
         self.is_running = self.check_url()
 
 if __name__ == '__main__':
-    print(Url('http://www.google.com'))
+    print(Url('https://nkpava02-1.nkparts.com:8443/AvalancheWeb/login.jsf'))

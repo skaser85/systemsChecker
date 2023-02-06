@@ -86,21 +86,21 @@ if __name__ == '__main__':
                       item['company'], item['business_unit'], item['system'])
         checks.append(check)
 
-    write_checklist(checks, checklist_filepath)
+    # write_checklist(checks, checklist_filepath)
 
-    # total = len(checks)
-    # for i, check in enumerate(checks):
-    #     print(f'{i + 1} of {total}: Checking {check.name}...')
-    #     if check.check_type == CheckType.JOB:
-    #         ...
-    #     elif check.check_type == CheckType.PROGRAM:
-    #         proc = WinProc(check.program, check.server)
-    #     elif check.check_type == CheckType.SERVICE:
-    #         proc = WinService(check.service, check.server, check.instance_count)
-    #     elif check.check_type == CheckType.URL:
-    #         proc = Url(check.url)
-    #     else:
-    #         raise KeyError(f'Unknown check type: {check.check_type}\n{check}')
+    total = len(checks)
+    for i, check in enumerate(checks):
+        print(f'{i + 1} of {total}: Checking {check.name}...')
+        if check.check_type == CheckType.JOB:
+            ...
+        elif check.check_type == CheckType.PROGRAM:
+            proc = WinProc(check.program, check.server)
+        elif check.check_type == CheckType.SERVICE:
+            proc = WinService(check.service, check.server)
+        elif check.check_type == CheckType.URL:
+            proc = Url(check.url)
+        else:
+            raise KeyError(f'Unknown check type: {check.check_type}\n{check}')
         
-    #     if not proc.is_running:
-    #         print(f'NOT RUNNING:\n{proc}')
+        if not proc.is_running:
+            print(f'NOT RUNNING:\n{proc}')
