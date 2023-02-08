@@ -5,12 +5,15 @@ from json import loads, dumps
 from service import WinService
 from url import Url
 from program import WinProc
+from load_db import db
+from database_handler import Db
 
 class CheckType(Enum):
     JOB = auto()
     PROGRAM = auto()
     SERVICE = auto()
     URL = auto()
+    SSIS = auto()
 
 class ServiceType(Enum):
     NONE = auto()
@@ -42,6 +45,7 @@ class Check:
     company: str = ''
     business_unit: str = ''
     system: str = ''
+    job_id: str = ''
 
     def to_json(self):
         d = asdict(self)
@@ -72,8 +76,7 @@ def write_checklist(checks: List[Check], checklist_filepath: str) -> None:
     with open(checklist_filepath, 'w') as f:
         f.write(dumps(data, ensure_ascii=True, indent=4))
 
-if __name__ == '__main__':
-    checklist_filepath = 'checklist.json'
+def get_checks(checklist_filepath: str) -> List[Check]:
     with open(checklist_filepath, 'r') as f:
         data = loads(f.read())
     
@@ -83,15 +86,17 @@ if __name__ == '__main__':
         st = get_service_type(item['service_type'])
         check = Check(item['name'], item['server'], ct, st, item['service'], item['url'], \
                       item['program'], item['instance_count'], item['database'], \
-                      item['company'], item['business_unit'], item['system'])
+                      item['company'], item['business_unit'], item['system'], item['job_id'])
         checks.append(check)
+    return checks
 
-    # write_checklist(checks, checklist_filepath)
-
+def do_checks(checks) -> None:
     total = len(checks)
     for i, check in enumerate(checks):
         print(f'{i + 1} of {total}: Checking {check.name}...')
         if check.check_type == CheckType.JOB:
+            ...
+        elif check.check_type == CheckType.SSIS:
             ...
         elif check.check_type == CheckType.PROGRAM:
             proc = WinProc(check.program, check.server)
@@ -104,3 +109,18 @@ if __name__ == '__main__':
         
         if not proc.is_running:
             print(f'NOT RUNNING:\n{proc}')
+
+if __name__ == '__main__':
+    # add SQL16 checks/cleanup jobs
+    checklist_filepath = 'checklist.json'
+    checks = get_checks(checklist_filepath)
+    # write_checklist(checks, checklist_filepath)
+    # do_checks(checks)
+
+    with Db('NKP8590', 'NKPSystemsCheck') as db:
+        for i, check in enumerate(checks):
+            sql = f'SET IDENTITY_INSERT "Check" ON;INSERT INTO [dbo].[Check] ([ID], [Name], [Server], [Check Type], [Service Type], [Service], [URL], [Program], [Instance Count], [Database], [Company], [Business Unit], [System], [Job ID]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);SET IDENTITY_INSERT "Check" OFF;'
+            values = (i+1, check.name, check.server, check.check_type.name.lower(), check.service_type.name.lower(), check.service, check.url, check.program, check.instance_count, check.database, check.company, check.business_unit, check.system, check.job_id)
+            print(sql)
+            print(values)
+            db.insert(sql, values)
