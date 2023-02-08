@@ -5,7 +5,6 @@ from json import loads, dumps
 from service import WinService
 from url import Url
 from program import WinProc
-from load_db import db
 from database_handler import Db
 
 class CheckType(Enum):
