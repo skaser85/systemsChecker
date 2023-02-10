@@ -5,6 +5,7 @@ from json import loads, dumps
 from service import WinService
 from url import Url
 from program import WinProc
+from ssis import Ssis
 from database_handler import Db
 
 class CheckType(Enum):
@@ -96,7 +97,7 @@ def do_checks(checks) -> None:
         if check.check_type == CheckType.JOB:
             ...
         elif check.check_type == CheckType.SSIS:
-            ...
+            proc = Ssis(check.name, check.job_id, check.server)
         elif check.check_type == CheckType.PROGRAM:
             proc = WinProc(check.program, check.server)
         elif check.check_type == CheckType.SERVICE:
@@ -114,12 +115,12 @@ if __name__ == '__main__':
     checklist_filepath = 'checklist.json'
     checks = get_checks(checklist_filepath)
     # write_checklist(checks, checklist_filepath)
-    # do_checks(checks)
+    do_checks(checks)
 
-    with Db('NKP8590', 'NKPSystemsCheck') as db:
-        for i, check in enumerate(checks):
-            sql = f'SET IDENTITY_INSERT "Check" ON;INSERT INTO [dbo].[Check] ([ID], [Name], [Server], [Check Type], [Service Type], [Service], [URL], [Program], [Instance Count], [Database], [Company], [Business Unit], [System], [Job ID]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);SET IDENTITY_INSERT "Check" OFF;'
-            values = (i+1, check.name, check.server, check.check_type.name.lower(), check.service_type.name.lower(), check.service, check.url, check.program, check.instance_count, check.database, check.company, check.business_unit, check.system, check.job_id)
-            print(sql)
-            print(values)
-            db.insert(sql, values)
+    # with Db('NKP8590', 'NKPSystemsCheck') as db:
+    #     for i, check in enumerate(checks):
+    #         sql = f'SET IDENTITY_INSERT "Check" ON;INSERT INTO [dbo].[Check] ([ID], [Name], [Server], [Check Type], [Service Type], [Service], [URL], [Program], [Instance Count], [Database], [Company], [Business Unit], [System], [Job ID]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);SET IDENTITY_INSERT "Check" OFF;'
+    #         values = (i+1, check.name, check.server, check.check_type.name.lower(), check.service_type.name.lower(), check.service, check.url, check.program, check.instance_count, check.database, check.company, check.business_unit, check.system, check.job_id)
+    #         print(sql)
+    #         print(values)
+    #         db.insert(sql, values)
