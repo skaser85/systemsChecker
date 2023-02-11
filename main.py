@@ -6,6 +6,7 @@ from service import WinService
 from url import Url
 from program import WinProc
 from ssis import Ssis
+from job import JobQueueEntry, ObjectType
 from database_handler import Db
 
 class CheckType(Enum):
@@ -46,28 +47,15 @@ class Check:
     business_unit: str = ''
     system: str = ''
     job_id: str = ''
+    object_type: ObjectType = ObjectType.null
+    object_id: int = 0
 
     def to_json(self):
         d = asdict(self)
         d['check_type'] = self.check_type.name.lower()
         d['service_type'] = self.service_type.name.lower()
+        d['object_type'] = self.object_type.name.lower()
         return d
-
-def get_check_type(t: str) -> CheckType:
-    t = t.lower()
-    types = list(CheckType)
-    for tp in types:
-        if tp.name.lower() == t:
-            return tp
-    raise KeyError(f'Cannot find a valid job type for {t}.')
-
-def get_service_type(t: str) -> ServiceType:
-    t = t.lower()
-    types = list(ServiceType)
-    for tp in types:
-        if tp.name.lower() == t:
-            return tp
-    return ServiceType.NONE
 
 def write_checklist(checks: List[Check], checklist_filepath: str) -> None:
     data = []
@@ -82,11 +70,17 @@ def get_checks(checklist_filepath: str) -> List[Check]:
     
     checks: List[Check] = []
     for item in data:
-        ct = get_check_type(item['check_type'])
-        st = get_service_type(item['service_type'])
+        ct = CheckType[item['check_type'].upper()]
+        st = ServiceType[item['service_type'].upper()]
+        object_type = ObjectType.null
+        if 'object_type' in item:
+            object_type = ObjectType[item['object_type']]
+        object_id = 0
+        if 'object_id' in item:
+            object_id = item['object_id']
         check = Check(item['name'], item['server'], ct, st, item['service'], item['url'], \
                       item['program'], item['instance_count'], item['database'], \
-                      item['company'], item['business_unit'], item['system'], item['job_id'])
+                      item['company'], item['business_unit'], item['system'], item['job_id'], object_type, object_id)
         checks.append(check)
     return checks
 
@@ -95,7 +89,7 @@ def do_checks(checks) -> None:
     for i, check in enumerate(checks):
         print(f'{i + 1} of {total}: Checking {check.name}...')
         if check.check_type == CheckType.JOB:
-            ...
+            proc = JobQueueEntry(check.server, check.database.upper(), check.object_type, check.object_id, check.name)
         elif check.check_type == CheckType.SSIS:
             proc = Ssis(check.name, check.job_id, check.server)
         elif check.check_type == CheckType.PROGRAM:
