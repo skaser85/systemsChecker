@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/5c95cd5f3c.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../static/css/index.css">
     <title>NKP Systems Checker</title>
 </head>
 <body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar mb-4" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item" href="{{ url_for('index') }}">
             <img src="../static/images/NKP Industries Logo-transparent background.png">
@@ -69,9 +70,134 @@
         </div>
     </nav>
     <div class="container">
-        <h1>Add</h1>
+        <div class="field is-grouped">
+            <p class="control">
+              <button id="save-btn" class="button is-info">
+                <span class="icon">
+                    <i class="fas fa-save"></i>
+                </span>
+                <span>Save</span>
+              </button>
+            </p>
+        </div>
+        <div class="container">
+            <div class="field">
+                <label class="label">ID</label>
+                <div class="control">
+                  <input id="id" class="input" type="number" value="0" disabled>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Name</label>
+                <div class="control">
+                  <input id="name" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Server</label>
+                <div class="control">
+                  <input id="server" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Check Type</label>
+                <div class="control">
+                    <div class="select">
+                        <select id="check-type">
+                            {% for c in check_types %}
+                            <option>{{ c }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Check Category</label>
+                <div class="control">
+                    <div class="select">
+                        <select id="check-category">
+                            {% for s in check_categories %}
+                            <option>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Business Unit</label>
+                <div class="control">
+                  <input id="business-unit" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">System</label>
+                <div class="control">
+                  <input id="system" class="input" type="text" value="">
+                </div>
+            </div>
+            <hr>
+            <div class="field is-hidden hidable">
+                <label class="label">Service</label>
+                <div class="control">
+                  <input id="service" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="field is-hidden hidable">
+                <label class="label">URL</label>
+                <div class="control">
+                  <input id="url" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="fiel is-hidden hidable">
+                <label class="label">Program</label>
+                <div class="control">
+                  <input id="program" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="field is-hidden hidable">
+                <label class="label">Instance Count</label>
+                <div class="control">
+                  <input id="instance-count" class="input" type="number" value="0">
+                </div>
+            </div>
+            <div class="field is-hidden hidable">
+                <label class="label">Database</label>
+                <div class="control">
+                  <input id="database" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="field is-hidden hidable">
+                <label class="label">Company</label>
+                <div class="control">
+                  <input id="company" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="field is-hidden hidable">
+                <label class="label">Job ID</label>
+                <div class="control">
+                  <input id="job-id" class="input" type="text" value="">
+                </div>
+            </div>
+            <div class="field is-hidden hidable">
+                <label class="label">Object Type</label>
+                <div class="control">
+                    <div class="select">
+                        <select id="object-type">
+                            {% for o in object_types %}
+                            <option>{{ o }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-hidden hidable">
+                <label class="label">Object ID</label>
+                <div class="control">
+                  <input id="object-id" class="input" type="number" value="0">
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="https://kit.fontawesome.com/5e450a7643.js" crossorigin="anonymous"></script>
-    <script src="../static/js/documentation.js"></script>
+    <script src="../static/js/add.js"></script>
 </body>
 </html>

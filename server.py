@@ -41,7 +41,7 @@ def edit(check_id):
                                         object_types=[o.name.upper() for o in list(ObjectType)])
 
 @app.route('/edit/save', methods=['POST'])
-def save():
+def saveEdit():
     data = json.loads(request.data)
     check = Check(int(data['id']), data['name'], data['server'], CheckType[data['checkType']], CheckCategory[data['checkCategory']], 
                   data['service'], data['url'], data['program'], int(data['instanceCount']), data['database'], data['company'], 
@@ -63,7 +63,28 @@ def save():
 
 @app.route('/add')
 def add():
-    return render_template('addCheck.html')
+    return render_template('addCheck.html', check_types=[c.name.upper() for c in list(CheckType)], 
+                                        check_categories=[s.name.upper() for s in list(CheckCategory)], 
+                                        object_types=[o.name.upper() for o in list(ObjectType)])
+
+@app.route('/add/save', methods=['POST'])
+def saveNew():
+    data = json.loads(request.data)
+    check = Check(int(data['id']), data['name'], data['server'], CheckType[data['checkType']], CheckCategory[data['checkCategory']], 
+                  data['service'], data['url'], data['program'], int(data['instanceCount']), data['database'], data['company'], 
+                  data['businessUnit'], data['system'], data['jobID'], ObjectType[data['objectType'].lower()], int(data['objectID']))
+    with Db(DB_SERVER, DB_NAME) as db:
+        checks = db.select('SELECT * FROM [Check]').fetchall()
+        check._id = checks[-1][0] + 1
+        sql = f'''SET IDENTITY_INSERT "Check" ON;
+                    INSERT INTO [dbo].[Check] ([ID], [Name], [Server], [Check Type], [Check Category], [Service], 
+                                                [URL], [Program], [Instance Count], [Database], [Company], [Business Unit], 
+                                                [System], [Job ID], [Object Type], [Object ID]) 
+                                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                    SET IDENTITY_INSERT "Check" OFF;'''
+        values = (check._id, check.name, check.server, check.check_type.name.lower(), check.check_category.name.lower(), check.service, check.url, check.program, check.instance_count, check.database, check.company, check.business_unit, check.system, check.job_id, check.object_type.name.lower(), check.object_id)
+        db.insert(sql, values)
+    return check.to_json()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8008, debug=True)

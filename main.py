@@ -90,7 +90,7 @@ def get_checks_sql() -> List[Check]:
     for item in checklist:
         ct = CheckType[item[3].upper()]
         st = CheckCategory[item[4].upper()]
-        object_type = ObjectType[item[14].lower()]
+        object_type = ObjectType['nothing' if item[14].lower() == 'null' else item[14].lower()]
 
         check = Check(item[0], item[1], item[2], ct, st, item[5], item[6], item[7], item[8], item[9], \
                       item[10], item[11], item[12], item[13], object_type, item[15])
@@ -123,24 +123,21 @@ def do_checks(checks) -> None:
             print(f'NOT RUNNING:\n{proc}')
 
 if __name__ == '__main__':
-    # checks = get_checks_sql()
-    # do_checks(checks)
-    # write_checklist(checks, 'checklist.json')
-    # add SQL16 checks/cleanup jobs
     checklist_filepath = 'checklist.json'
-    checks = get_checks(checklist_filepath)
-    # write_checklist(checks, checklist_filepath)
+    checks = get_checks_sql()
+    # checks = get_checks(checklist_filepath)
+    write_checklist(checks, checklist_filepath)
     # do_checks(checks)
 
-    with Db('NKP8590', 'NKPSystemsCheck') as db:
-        for i, check in enumerate(checks):
-            sql = f'''SET IDENTITY_INSERT "Check" ON;
-                      INSERT INTO [dbo].[Check] ([ID], [Name], [Server], [Check Type], [Check Category], [Service], 
-                                                 [URL], [Program], [Instance Count], [Database], [Company], [Business Unit], 
-                                                 [System], [Job ID], [Object Type], [Object ID]) 
-                                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-                      SET IDENTITY_INSERT "Check" OFF;'''
-            values = (i+1, check.name, check.server, check.check_type.name.lower(), check.check_category.name.lower(), check.service, check.url, check.program, check.instance_count, check.database, check.company, check.business_unit, check.system, check.job_id, check.object_type.name.lower(), check.object_id)
-            print(sql)
-            print(values)
-            db.insert(sql, values)
+    # with Db('NKP8590', 'NKPSystemsCheck') as db:
+    #     for i, check in enumerate(checks):
+    #         sql = f'''SET IDENTITY_INSERT "Check" ON;
+    #                   INSERT INTO [dbo].[Check] ([ID], [Name], [Server], [Check Type], [Check Category], [Service], 
+    #                                              [URL], [Program], [Instance Count], [Database], [Company], [Business Unit], 
+    #                                              [System], [Job ID], [Object Type], [Object ID]) 
+    #                                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    #                   SET IDENTITY_INSERT "Check" OFF;'''
+    #         values = (i+1, check.name, check.server, check.check_type.name.lower(), check.check_category.name.lower(), check.service, check.url, check.program, check.instance_count, check.database, check.company, check.business_unit, check.system, check.job_id, check.object_type.name.lower(), check.object_id)
+    #         print(sql)
+    #         print(values)
+    #         db.insert(sql, values)
