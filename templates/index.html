@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <title>NKP Systems Checker</title>
+</head>
+<body>
+    <nav class="navbar mb-4" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="{{ url_for('index') }}">
+            <img src="static\images\NKP Industries Logo-transparent background.png">
+          </a>
+      
+          <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+      
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="{{ url_for('index') }}">
+              Home
+            </a>
+      
+            <a class="navbar-item" href="{{ url_for('documentation') }}">
+              Documentation
+            </a>
+      
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link">
+                More
+              </a>
+      
+              <div class="navbar-dropdown">
+                <a class="navbar-item">
+                  About
+                </a>
+                <a class="navbar-item">
+                  Jobs
+                </a>
+                <a class="navbar-item">
+                  Contact
+                </a>
+                <hr class="navbar-divider">
+                <a class="navbar-item">
+                  Report an issue
+                </a>
+              </div>
+            </div>
+          </div>
+      
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <a class="button is-primary">
+                  <strong>Sign up</strong>
+                </a>
+                <a class="button is-light">
+                  Log in
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="field is-grouped" style="position: fixed; top: 6%;">
+            <p class="control">
+            <button id="view-edit-check-btn" class="button is-info">
+                View/Edit Check
+            </button>
+            </p>
+            <p class="control">
+              <button id="add-check-btn" class="button is-link">
+                Add Check
+              </button>
+            </p>
+            <p class="control">
+              <button id="delete-check-btn" class="button is-danger">
+                Delete Check
+              </button>
+            </p>
+        </div>
+        <div class="table-container" style="margin-top: 75px;">
+            <table id="checks-table" class="table is-bordered is-striped is-narrow is-hoverable">
+                <thead>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Server</th>
+                    <th>Check Type</th>
+                    <th>Service Type</th>
+                    <th>Service</th>
+                    <th>URL</th>
+                    <th>Program</th>
+                    <th>Instance Count</th>
+                    <th>Database</th>
+                    <th>Company</th>
+                    <th>Business Unit</th>
+                    <th>System</th>
+                    <th>Job ID</th>
+                    <th>Object Type</th>
+                    <th>Object ID</th>
+                </thead>
+                <tbody>
+                    {% for check in checks %}
+                    <tr>
+                        <td>{{ check._id }}</td>
+                        <td>{{ check.name }}</td>
+                        <td>{{ check.server }}</td>
+                        <td>{{ check.check_type.name.upper() }}</td>
+                        <td>{{ check.check_category.name.upper() }}</td>
+                        <td>{{ check.service }}</td>
+                        <td>{{ check.url }}</td>
+                        <td>{{ check.program }}</td>
+                        <td>{{ check.instance_count }}</td>
+                        <td>{{ check.database }}</td>
+                        <td>{{ check.company }}</td>
+                        <td>{{ check.business_unit }}</td>
+                        <td>{{ check.system }}</td>
+                        <td>{{ check.job_id }}</td>
+                        <td>{{ check.object_type.name.upper() }}</td>
+                        <td>{{ check.object_id }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div> <!-- table container -->
+    </div> <!-- main body container -->
+    <script src="https://kit.fontawesome.com/5e450a7643.js" crossorigin="anonymous"></script>
+    <script src="../static/js/index.js"></script>
+</body>
+</html>

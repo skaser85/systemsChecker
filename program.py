@@ -4,7 +4,7 @@ import os
 import subprocess
 from dataclasses import dataclass, field
 
-def get_tasklist(server_name: str):
+def get_tasklist(server_name: str) -> str:
     output = subprocess.run(['tasklist', '/s', rf'\\{server_name}', '/fo', 'csv', '/nh'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if output.returncode == 0:
         return output.stdout.decode()
@@ -14,7 +14,8 @@ def get_tasklist(server_name: str):
 @dataclass
 class WinProc:
     name: str
-    server_name: str = ''
+    server_name: str
+    tasklist: str = ''
     should_be_running_count: int = 1
     is_running: bool = False
     instances: List[int] = field(default_factory=list)
@@ -22,9 +23,10 @@ class WinProc:
     def __post_init__(self):
         if (len(self.server_name) == 0):
             self.server_name = os.environ['COMPUTERNAME']
-        self.update()
+        self.update(self.tasklist)
 
-    def update(self):
+    def update(self, tasklist: str = '') -> None:
+        tl = get_tasklist(self.server_name) if len(tasklist) == 0 else tasklist
         tl = [l.strip() for l in get_tasklist(self.server_name).split('\n') if len(l.strip()) > 0]
         tl = [[i.strip('\"') for i in l.split(',"')] for l in tl]
         tasks = [t for t in tl if t[0].lower() == self.name.lower()]

@@ -4,7 +4,7 @@ from enum import Enum, auto
 from database_handler import Db
 
 class ObjectType(Enum):
-    null = 0
+    nothing = 0
     report = 3
     codeunit = 5
 
