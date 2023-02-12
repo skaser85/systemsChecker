@@ -18,6 +18,7 @@ const docObjectID = document.querySelector("#object-id");
 const docNextBtn = document.querySelector("#next-check-btn");
 const docPrevBtn = document.querySelector("#prev-check-btn");
 const docSaveBtn = document.querySelector("#save-btn");
+const docDeleteBtn = document.querySelector("#delete-btn");
 
 docCheckType.addEventListener("change", e => {
     showFieldsFor(docCheckType.value);
@@ -38,6 +39,21 @@ docSaveBtn.addEventListener("click", async e => {
     });
     const data = await response.json();
     console.log(data)
+});
+
+docDeleteBtn.addEventListener("click", async e => {
+    let formData = collectData();
+    const response = await fetch("delete", {
+        method: 'POST',
+        body: JSON.stringify(formData)
+    });
+    const data = await response.json();
+    console.log(data)
+    if (data.success) {
+        window.location.href = `${parseInt(docID.value) + 1}`;
+    } else {
+        console.log(data);
+    }
 });
 
 const showFieldsFor = (value) => {

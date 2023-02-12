@@ -29,7 +29,7 @@ def documentation():
 def edit(check_id):
     check_id = int(check_id)
     checks = get_checks('checklist.json')
-    if check_id == len(checks) + 1:
+    if check_id > len(checks):
         check = checks[-1]
     elif check_id == 0:
         check = checks[0]
@@ -60,6 +60,13 @@ def saveEdit():
                        check.company, check.business_unit, check.system, 
                        check.job_id, check.object_type.name.lower(), check.object_id, check._id))
     return check.to_json()
+
+@app.route('/edit/delete', methods=['POST'])
+def editDelete():
+    data = json.loads(request.data)
+    with Db(DB_SERVER, DB_NAME) as db:
+        db.delete(f'DELETE FROM {CHECK_TABLE} WHERE [ID] = ?', (int(data['id'])))
+    return {'success': True}
 
 @app.route('/add')
 def add():

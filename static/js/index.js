@@ -3,7 +3,6 @@ const docCheckRows = docChecksTable.querySelectorAll("tr");
 
 const docViewCheckBtn = document.querySelector("#view-edit-check-btn");
 const docAddCheckBtn = document.querySelector("#add-check-btn");
-const docDeleteCheckBtn = document.querySelector("#delete-check");
 
 let activeRow;
 
